@@ -10,5 +10,9 @@ func CreateUser(user *models.User) (*models.User, *errors.RestError) {
 	if valErr != nil {
 		return nil, valErr
 	}
+	err := models.SaveUser(user)
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }
