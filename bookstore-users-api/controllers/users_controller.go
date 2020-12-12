@@ -39,11 +39,12 @@ func CreateUser(c *gin.Context) {
 		// 	Error:   "Bad Request",
 		// 	Message: "User Json Not Proper",
 		// }
-		retErr := errors.RestError{}
-		retErr.Error = "Bad Request"
-		retErr.Status = http.StatusBadRequest
-		retErr.Message = "User Json Not Proper!"
-		c.JSON(retErr.Status, retErr)
+		// retErr := errors.RestError{}
+		// retErr.Error = "Bad Request"
+		// retErr.Status = http.StatusBadRequest
+		// retErr.Message = "User Json Not Proper!"
+		retErr := errors.RestBadRequestError("User Json Not Proper!")
+		c.JSON(retErr.Status, &retErr)
 		return
 	}
 	fmt.Println(user)
