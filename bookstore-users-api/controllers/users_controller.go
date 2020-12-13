@@ -73,6 +73,33 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
+func UpdateUser(c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		retErr := errors.RestBadRequestError("invalid user id")
+		c.JSON(retErr.Status, retErr)
+		return
+	}
+
+	var newuser models.User
+	if err := c.ShouldBindJSON(&newuser); err != nil {
+		fmt.Println(err)
+		retErr := errors.RestBadRequestError("User Json Not Proper!")
+		c.JSON(retErr.Status, &retErr)
+		return
+	}
+
+	newuser.Id = userId
+	upDateErr := services.UpdateUser(&newuser)
+	if upDateErr != nil {
+		fmt.Println(newuser)
+		c.JSON(upDateErr.Status, upDateErr)
+		return
+	}
+	fmt.Println(newuser)
+	c.JSON(http.StatusCreated, newuser)
+}
+
 func SearchUsers(c *gin.Context) {
 	c.String(http.StatusNotImplemented, "Not yet Implemented")
 }

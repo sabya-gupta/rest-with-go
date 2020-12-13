@@ -20,3 +20,11 @@ func CreateUser(user *models.User) (*models.User, *errors.RestError) {
 func GetUser(iD int64) (*models.User, *errors.RestError) {
 	return models.GetUserById(iD)
 }
+
+func UpdateUser(user *models.User) *errors.RestError {
+	err := models.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
