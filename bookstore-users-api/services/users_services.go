@@ -28,3 +28,11 @@ func UpdateUser(user *models.User) *errors.RestError {
 	}
 	return nil
 }
+
+func DeleteUser(id int64) *errors.RestError {
+	err := models.DeleteUser(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

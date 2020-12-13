@@ -8,4 +8,5 @@ func mapUrls() {
 	router.PUT("/user/:user_id", controllers.UpdateUser)
 	router.GET("/user/:user_id", controllers.GetUser)
 	router.GET("/search/user", controllers.SearchUsers)
+	router.DELETE("/user/:user_id", controllers.DeleteUser)
 }

@@ -13,11 +13,12 @@ import (
 // var userDB = make(map[int64]*User)
 
 const (
-	userInsQry  = "INSERT INTO USERS (first_name, last_name, email, date_created) VALUES (?, ?, ?, ?);"
-	emailUnique = "email_UNIQUE"
-	userGetById = "SELECT id, first_name, last_name, email, date_created FROM USERS WHERE id = ?;"
-	userUpdtQry = "UPDATE USERS SET first_name = ? , last_name = ?, email = ?  WHERE id = ?;"
-	norows      = "no rows in result set"
+	userInsQry    = "INSERT INTO USERS (first_name, last_name, email, date_created) VALUES (?, ?, ?, ?);"
+	emailUnique   = "email_UNIQUE"
+	userGetByID   = "SELECT id, first_name, last_name, email, date_created FROM USERS WHERE id = ?;"
+	userUpdtQry   = "UPDATE USERS SET first_name = ? , last_name = ?, email = ?  WHERE id = ?;"
+	norows        = "no rows in result set"
+	userDeleteQry = "DELETE FROM USERS WHERE id=?"
 )
 
 func GetUserById(id int64) (*User, *errors.RestError) {
@@ -26,7 +27,7 @@ func GetUserById(id int64) (*User, *errors.RestError) {
 		panic(pingErr)
 	}
 
-	stmnt, err1 := bookstoredb.DBClient.Prepare(userGetById)
+	stmnt, err1 := bookstoredb.DBClient.Prepare(userGetByID)
 	if err1 != nil {
 		fmt.Println(err1)
 		return nil, errors.RestInternalServerError("Cannot Create Prepare Get Statement")
@@ -105,6 +106,24 @@ func UpdateUser(user *User) *errors.RestError {
 	if err2 != nil {
 		fmt.Println("The error is : ", err2.Error())
 		return errors.RestInternalServerError("Cannot Update User")
+	}
+
+	return nil
+}
+
+func DeleteUser(id int64) *errors.RestError {
+	stmnt, err1 := bookstoredb.DBClient.Prepare(userDeleteQry)
+	if err1 != nil {
+		fmt.Println(err1)
+		return errors.RestInternalServerError("Cannot Create Delete Statement")
+	}
+	defer stmnt.Close()
+
+	_, err2 := stmnt.Exec(id)
+
+	if err2 != nil {
+		fmt.Println("The error is : ", err2.Error())
+		return errors.RestInternalServerError("Cannot Delete User")
 	}
 
 	return nil

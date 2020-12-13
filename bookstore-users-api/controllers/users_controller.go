@@ -92,12 +92,29 @@ func UpdateUser(c *gin.Context) {
 	newuser.Id = userId
 	upDateErr := services.UpdateUser(&newuser)
 	if upDateErr != nil {
-		fmt.Println(newuser)
+		fmt.Println(upDateErr)
 		c.JSON(upDateErr.Status, upDateErr)
 		return
 	}
 	fmt.Println(newuser)
-	c.JSON(http.StatusCreated, newuser)
+	c.JSON(http.StatusOK, newuser)
+}
+
+func DeleteUser(c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		retErr := errors.RestBadRequestError("invalid user id")
+		c.JSON(retErr.Status, retErr)
+		return
+	}
+
+	upDateErr := services.DeleteUser(userId)
+	if upDateErr != nil {
+		fmt.Println(upDateErr)
+		c.JSON(upDateErr.Status, upDateErr)
+		return
+	}
+	c.JSON(http.StatusOK, nil)
 }
 
 func SearchUsers(c *gin.Context) {
