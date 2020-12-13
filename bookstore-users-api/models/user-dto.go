@@ -3,7 +3,7 @@ package models
 import (
 	"strings"
 
-	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/errors"
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/errors"
 )
 
 type User struct {

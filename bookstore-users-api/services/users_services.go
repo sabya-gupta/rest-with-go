@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/errors"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/models"
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/errors"
 )
 
 func CreateUser(user *models.User) (*models.User, *errors.RestError) {
@@ -15,4 +15,8 @@ func CreateUser(user *models.User) (*models.User, *errors.RestError) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func GetUser(iD int64) (*models.User, *errors.RestError) {
+	return models.GetUserById(iD)
 }

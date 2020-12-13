@@ -3,10 +3,11 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
-	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/errors"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/models"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/services"
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +15,22 @@ import (
 var counter int
 
 func GetUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "Not yet Implemented")
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		retErr := errors.RestBadRequestError("invalid user id")
+		c.JSON(retErr.Status, retErr)
+		return
+	}
+
+	user, getUserErr := services.GetUser(userId)
+	if getUserErr != nil {
+		c.JSON(getUserErr.Status, getUserErr)
+		return
+	}
+
+	c.JSON(http.StatusFound, user)
 }
+
 func CreateUser(c *gin.Context) {
 	var user models.User
 	// bytes, err := ioutil.ReadAll(c.Request.Body)
@@ -57,6 +72,7 @@ func CreateUser(c *gin.Context) {
 	fmt.Println(result)
 	c.JSON(http.StatusCreated, result)
 }
+
 func SearchUsers(c *gin.Context) {
 	c.String(http.StatusNotImplemented, "Not yet Implemented")
 }

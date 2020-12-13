@@ -23,3 +23,11 @@ func RestNotFoundError(message string) *RestError {
 		Error:   "Bad Request",
 	}
 }
+
+func RestInternalServerError(message string) *RestError {
+	return &RestError{
+		Message: message,
+		Status:  http.StatusInternalServerError,
+		Error:   "Internal Server Error",
+	}
+}
