@@ -9,10 +9,13 @@ import (
 	"github.com/sabya-gupta/rest-with-go/database/mysql/bookstoredb"
 )
 
-var userDB = make(map[int64]*User)
+// var userDB = make(map[int64]*User)
 
 const (
-	userInsQry = "INSERT INTO USERS (first_name, last_name, email, date_created) VALUES (?, ?, ?, ?);"
+	userInsQry  = "INSERT INTO USERS (first_name, last_name, email, date_created) VALUES (?, ?, ?, ?);"
+	emailUnique = "email_UNIQUE"
+	userGetById = "SELECT id, first_name, last_name, email, date_created FROM USERS WHERE id = ?;"
+	norows      = "no rows in result set"
 )
 
 func GetUserById(id int64) (*User, *errors.RestError) {
@@ -20,11 +23,25 @@ func GetUserById(id int64) (*User, *errors.RestError) {
 	if pingErr != nil {
 		panic(pingErr)
 	}
-	user := userDB[id]
-	if user == nil {
-		return nil, errors.RestNotFoundError(fmt.Sprintf("user %d not found", id))
+
+	stmnt, err1 := bookstoredb.DBClient.Prepare(userGetById)
+	if err1 != nil {
+		fmt.Println(err1)
+		return nil, errors.RestInternalServerError("Cannot Create Prepare Get Statement")
 	}
-	return user, nil
+	defer stmnt.Close()
+	usrRow := stmnt.QueryRow(id) //if query then you need to close the userRow
+	var retUser User
+	err2 := usrRow.Scan(&retUser.Id, &retUser.FirstName, &retUser.LastName, &retUser.Email, &retUser.DateCreated)
+	if err2 != nil {
+		fmt.Println(err2)
+		if strings.Contains(err2.Error(), norows) {
+			return nil, errors.RestNotFoundError("No Records Found")
+		}
+		return nil, errors.RestInternalServerError("Error Getting User")
+	}
+	return &retUser, nil
+
 }
 
 func SaveUser(user *User) *errors.RestError {
@@ -45,7 +62,7 @@ func SaveUser(user *User) *errors.RestError {
 
 	if err2 != nil {
 		fmt.Println("The error is : ", err2.Error())
-		if strings.Contains(err2.Error(), "email_UNIQUE") {
+		if strings.Contains(err2.Error(), emailUnique) {
 			return errors.RestBadRequestError("Email already exists")
 		}
 		return errors.RestInternalServerError("Cannot Create User")
