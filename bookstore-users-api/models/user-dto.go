@@ -12,6 +12,8 @@ type User struct {
 	LastName    string
 	Email       string
 	DateCreated string
+	Status      string
+	Password    string
 }
 
 func (user *User) Validate() *errors.RestError {
@@ -19,5 +21,10 @@ func (user *User) Validate() *errors.RestError {
 	if user.Email == "" {
 		return errors.RestBadRequestError("Email Not Valid")
 	}
+	user.Password = strings.TrimSpace(user.Password)
+	if user.Password == "" {
+		return errors.RestBadRequestError("Password Not Valid")
+	}
+
 	return nil
 }

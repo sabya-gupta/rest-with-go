@@ -22,17 +22,13 @@ func GetUser(iD int64) (*models.User, *errors.RestError) {
 }
 
 func UpdateUser(user *models.User) *errors.RestError {
-	err := models.UpdateUser(user)
-	if err != nil {
-		return err
-	}
-	return nil
+	return models.UpdateUser(user)
 }
 
 func DeleteUser(id int64) *errors.RestError {
-	err := models.DeleteUser(id)
-	if err != nil {
-		return err
-	}
-	return nil
+	return models.DeleteUser(id)
+}
+
+func FindUsersByStatus(status string) ([]*models.User, *errors.RestError) {
+	return models.FindUserByStatus(status)
 }
