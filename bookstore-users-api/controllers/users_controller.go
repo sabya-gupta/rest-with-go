@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/models"
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/models/bookstoreuser"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/services"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/errors"
 
@@ -28,11 +28,12 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusFound, user)
+	c.JSON(
+		http.StatusFound, user.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func CreateUser(c *gin.Context) {
-	var user models.User
+	var user bookstoreuser.User
 	// bytes, err := ioutil.ReadAll(c.Request.Body)
 	// fmt.Println(string(bytes))
 	// if err != nil {
@@ -70,7 +71,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	fmt.Println(result)
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func UpdateUser(c *gin.Context) {
@@ -81,7 +82,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	var newuser models.User
+	var newuser bookstoreuser.User
 	if err := c.ShouldBindJSON(&newuser); err != nil {
 		fmt.Println(err)
 		retErr := errors.RestBadRequestError("User Json Not Proper!")
@@ -97,7 +98,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 	fmt.Println(newuser)
-	c.JSON(http.StatusOK, newuser)
+	c.JSON(http.StatusOK, newuser.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func DeleteUser(c *gin.Context) {
@@ -125,5 +126,5 @@ func FindUsersByStatus(c *gin.Context) {
 		c.JSON(err.Status, err)
 		return
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
 }

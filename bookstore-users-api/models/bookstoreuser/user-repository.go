@@ -1,18 +1,19 @@
-package models
+package bookstoreuser
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/cryptoutils"
+	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/database/mysql/bookstoredb"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/dateutils"
 	"github.com/sabya-gupta/rest-with-go/bookstore-users-api/utils/errors"
-	"github.com/sabya-gupta/rest-with-go/database/mysql/bookstoredb"
 )
 
 // var userDB = make(map[int64]*User)
 
 const (
-	userInsQry      = "INSERT INTO USERS (first_name, last_name, email, date_created, status) VALUES (?, ?, ?, ?, ?);"
+	userInsQry      = "INSERT INTO USERS (first_name, last_name, email, date_created, status, password) VALUES (?, ?, ?, ?, ?, ?);"
 	emailUnique     = "email_UNIQUE"
 	userGetByID     = "SELECT id, first_name, last_name, email, date_created, status FROM USERS WHERE id = ?;"
 	userGetByStatus = "SELECT id, first_name, last_name, email, date_created, status FROM USERS WHERE status = ?;"
@@ -59,7 +60,8 @@ func SaveUser(user *User) *errors.RestError {
 
 	user.DateCreated = dateutils.GetNowAsString()
 	user.Status = "active"
-	result, err2 := stmnt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated, user.Status)
+	user.Password = cryptoutils.GetMD5(user.Password)
+	result, err2 := stmnt.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated, user.Status, user.Password)
 
 	if err2 != nil {
 		fmt.Println("The error is : ", err2.Error())
